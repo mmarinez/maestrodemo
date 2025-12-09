@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia iOS Test Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary-card h3 {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .summary-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .info {
+            color: #667eea;
+        }
+        .device-info {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 0 40px 20px 40px;
+            border: 2px solid #e9ecef;
+        }
+        .device-info h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .device-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .detail-label {
+            font-size: 0.85em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        .detail-value {
+            font-size: 1em;
+            color: #333;
+        }
+        .test-section {
+            padding: 40px;
+        }
+        .test-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .screenshot-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .screenshot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .screenshot-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .screenshot-img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .screenshot-img:hover {
+            transform: scale(1.02);
+        }
+        .screenshot-description {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #d4edda;
+            color: #155724;
+        }
+        .footer {
+            background: #2d3436;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Wikipedia iOS Test Report</h1>
+            <p>Automated UI Testing with Screenshots</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Generated on December 8, 2025 at 23:13</p>
+        </div>
+
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Tests</h3>
+                <div class="value info">2</div>
+            </div>
+            <div class="summary-card">
+                <h3>Passed</h3>
+                <div class="value success">2</div>
+            </div>
+            <div class="summary-card">
+                <h3>Failed</h3>
+                <div class="value" style="color: #dc3545;">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Success Rate</h3>
+                <div class="value success">100%</div>
+            </div>
+            <div class="summary-card">
+                <h3>Commands</h3>
+                <div class="value info">18</div>
+            </div>
+            <div class="summary-card">
+                <h3>Screenshots</h3>
+                <div class="value info">7</div>
+            </div>
+        </div>
+
+        <div class="device-info">
+            <h3>Test Device Information</h3>
+            <div class="device-details">
+                <div class="detail-item">
+                    <span class="detail-label">Device</span>
+                    <span class="detail-value">iPhone 16 Pro</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">iOS Version</span>
+                    <span class="detail-value">18.6</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Platform</span>
+                    <span class="detail-value">iOS Simulator</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">App ID</span>
+                    <span class="detail-value">org.wikimedia.wikipedia</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Execution Flow <span class="badge">ALL PASSED</span></h2>
+            
+            <div class="screenshot-grid">
+                <div class="screenshot-card">
+                    <h3><span class="step-number">1</span> App Launched</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img1.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="App Launched" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Wikipedia app successfully launched with clear state. Initial screen loaded and ready for testing.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">2</span> Onboarding Start</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img2.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="Onboarding Start" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        User onboarding flow initiated. Elements loaded successfully from screen definitions.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">3</span> Onboarding Progress</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img3.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="Onboarding Progress" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Progressing through onboarding screens by tapping "Next" button until data privacy screen appears.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">4</span> Data Privacy Screen</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img4.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="Data Privacy Screen" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Data privacy consent screen reached. "Get Started" button is visible and ready to be tapped.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">5</span> After Get Started</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img5.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="After Get Started" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Successfully accepted data privacy terms. Bottom sheet appeared with additional options.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">6</span> Home Screen</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img6.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="Home Screen" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Main home screen loaded successfully. Bottom sheet dismissed, ready for primary app interactions.
+                    </div>
+                </div>
+
+                <div class="screenshot-card">
+                    <h3><span class="step-number">7</span> After Swipe Interaction</h3>
+                    <img class="screenshot-img" src="data:image/png;base64,EOF
+cat /tmp/img7.b64 >> wikipedia-test-report.html
+cat << 'EOF' >> wikipedia-test-report.html
+" alt="After Swipe" onclick="openModal(this)">
+                    <div class="screenshot-description">
+                        Swipe gesture executed from 58%,26% to 58%,45%. Screen state after user interaction completed.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by Maestro Mobile Testing Framework</p>
+            <p style="margin-top: 5px; opacity: 0.8;">Generated by Claude Code Automation</p>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = img.src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

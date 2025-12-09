@@ -1,0 +1,4 @@
+output.onboarding = {
+    nextButton: "Next"
+
+}

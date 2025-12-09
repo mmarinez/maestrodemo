@@ -1,0 +1,26 @@
+appId: org.wikimedia.wikipedia
+tags:
+  - ios
+  - passing
+---
+- clearState
+- launchApp
+- takeScreenshot: "screenshots/01_app_launched.png"
+- runFlow: loadElements.yml
+- takeScreenshot: "screenshots/02_onboarding_start.png"
+- repeat:
+    while:
+      notVisible: ${output.dataprivacy.getstartedButton}
+    commands:
+      - tapOn: ${output.onboarding.nextButton}
+      - takeScreenshot: "screenshots/03_onboarding_progress.png"
+- takeScreenshot: "screenshots/04_data_privacy_screen.png"
+- tapOn: ${output.dataprivacy.getstartedButton}
+- takeScreenshot: "screenshots/05_after_get_started.png"
+- tapOn: ${output.home.bottomSheet.doneButton}
+- takeScreenshot: "screenshots/06_home_screen.png"
+- swipe:
+    start: 58%,26%
+    end: 58%,45%
+    duration: 1087
+- takeScreenshot: "screenshots/07_after_swipe.png"

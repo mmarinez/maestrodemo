@@ -1,0 +1,6 @@
+appId: org.wikimedia.wikipedia
+---
+
+- runScript: screens/onboarding.js
+- runScript: screens/dataprivacy.js
+- runScript: screens/home.js
