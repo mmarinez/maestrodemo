@@ -19,8 +19,8 @@ tags:
 - takeScreenshot: "screenshots/05_after_get_started.png"
 - tapOn: ${output.home.bottomSheet.doneButton}
 - takeScreenshot: "screenshots/06_home_screen.png"
-- swipe:
-    start: 58%,26%
-    end: 58%,45%
-    duration: 1087
-- takeScreenshot: "screenshots/07_after_swipe.png"
+- tapOn: Macrobdella decora
+- scrollUntilVisible:
+    element:
+      text: Taxonomy
+
