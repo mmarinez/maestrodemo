@@ -44,8 +44,7 @@ jobs:
           api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
           project-id: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
           app-file: Wikipedia.app
-          workspace: .maestro
-          include-tags: ios
+          workspace: .maestro/ios
           device-os: iOS-17-5
           # Optional parameters:
           # device-locale: en_US
