@@ -120,31 +120,44 @@ When running tests:
 
 ## CI/CD Integration
 
-### GitHub Actions
-Tests are automatically run on every push and pull request via GitHub Actions.
+### GitHub Actions with Maestro Cloud
+Tests are automatically run on every push and pull request via GitHub Actions using **Maestro Cloud**.
 
 **Workflow file:** `.github/workflows/maestro-tests.yml`
 
 **What it does:**
-- Boots iOS simulator on macOS runner
-- Installs Maestro CLI
-- Runs all iOS tests with JUnit output
-- Stores screenshots in `screenshots/` directory
-- Uploads test results and screenshots as artifacts
-- Publishes test results to PR comments
+- Runs on ubuntu-latest (no macOS runner needed)
+- Uses Java 17
+- Uploads Wikipedia.app to Maestro Cloud
+- Runs all iOS tests on real devices in the cloud
+- Automatically captures screenshots and videos
+- Returns test results to GitHub Actions
+- Displays pass/fail status in PR checks
+
+**Setup required:**
+1. Get API key from [console.mobile.dev](https://console.mobile.dev)
+2. Add as GitHub secret: `MAESTRO_CLOUD_API_KEY`
+3. See `.github/MAESTRO_CLOUD_SETUP.md` for detailed instructions
 
 **Manual trigger:**
 Go to Actions tab in GitHub → Select "Maestro iOS Tests" → Click "Run workflow"
 
-**Artifacts:**
-- `test-results`: JUnit XML report
-- `test-screenshots`: All captured screenshots
-- `test-report`: HTML report (if generated)
+**Results available in:**
+- **GitHub Actions**: Pass/fail status and logs
+- **Maestro Cloud Console**: Detailed reports, screenshots, videos
+- URL: [console.mobile.dev](https://console.mobile.dev)
 
-### Running Tests Locally vs CI
-- **Local**: Screenshots saved to `screenshots/` directory
-- **CI**: Screenshots uploaded as GitHub Actions artifacts
-- Both follow the same naming conventions and structure
+### Running Tests Locally vs Cloud
+- **Local**: `maestro test .maestro/ios/`
+  - Runs on local simulator
+  - Screenshots saved to `screenshots/` directory
+  - Instant feedback during development
+
+- **Cloud (CI/CD)**: Automatic on push/PR
+  - Runs on real iOS devices
+  - Screenshots and videos in Maestro Cloud console
+  - More accurate testing environment
+  - Parallel execution capability
 
 ## Code Review Checklist
 

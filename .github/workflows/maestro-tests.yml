@@ -8,123 +8,45 @@ on:
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
-  ios-tests:
-    name: Run iOS Tests
-    runs-on: macos-latest # Required for iOS simulators
+  ios-cloud-tests:
+    name: Run iOS Tests on Maestro Cloud
+    runs-on: ubuntu-latest # Cloud tests don't need macOS runner
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java (required for Maestro)
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
-      - name: Install Maestro CLI
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
-
-      - name: Verify Maestro installation
-        run: maestro --version
-
-      - name: List available iOS simulators
-        run: xcrun simctl list devices available
-
-      - name: Boot iOS Simulator
-        run: |
-          # Boot iPhone 16 Pro or any available iOS simulator
-          DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | grep -o "[A-Z0-9\-]\{36\}")
-          if [ -z "$DEVICE_ID" ]; then
-            # Fallback to any available iPhone
-            DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -o "[A-Z0-9\-]\{36\}")
-          fi
-          echo "Booting simulator: $DEVICE_ID"
-          xcrun simctl boot "$DEVICE_ID" || echo "Simulator already booted"
-          echo "SIMULATOR_ID=$DEVICE_ID" >> $GITHUB_ENV
-
-      - name: Wait for simulator to be ready
-        run: |
-          for i in {1..30}; do
-            if xcrun simctl bootstatus "$SIMULATOR_ID" > /dev/null 2>&1; then
-              echo "Simulator is ready"
-              break
-            fi
-            echo "Waiting for simulator... ($i/30)"
-            sleep 2
-          done
-
-      - name: Install Wikipedia app (if available)
-        run: |
-          # If you have the .app bundle in the repo
-          if [ -d "Wikipedia.app" ]; then
-            xcrun simctl install "$SIMULATOR_ID" Wikipedia.app
-            echo "Wikipedia app installed"
-          else
-            echo "Wikipedia.app not found in repo - skipping installation"
-          fi
-
-      - name: Create screenshots directory
-        run: mkdir -p screenshots
-
-      - name: Run Maestro tests
-        run: |
-          maestro test \
-            --format junit \
-            --output test-results.xml \
-            .maestro/ios/
-        continue-on-error: true # Continue even if tests fail to upload artifacts
-
-      - name: List generated screenshots
-        if: always()
-        run: |
-          echo "Screenshots generated:"
-          ls -lah *.png || echo "No screenshots in root directory"
-          ls -lah screenshots/ || echo "No screenshots in screenshots directory"
-
-      - name: Move screenshots to screenshots directory
-        if: always()
-        run: |
-          # Move any PNG files from root to screenshots directory
-          find . -maxdepth 1 -name "*.png" -exec mv {} screenshots/ \; 2>/dev/null || true
-          echo "Screenshots moved to screenshots directory"
-
-      - name: Generate HTML Report
-        if: always()
-        run: |
-          # This would be where you generate your custom HTML report
-          # For now, we'll just note that screenshots are in screenshots/
-          echo "Screenshots are stored in screenshots/ directory"
-          ls -lh screenshots/
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Run Maestro Cloud Tests for iOS
+        uses: mobile-dev-inc/action-maestro-cloud@v1
         with:
-          name: test-results
-          path: test-results.xml
-          retention-days: 30
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+          app-file: Wikipedia.app
+          workspace: .maestro
+          include-tags: ios
+          # Optional parameters:
+          # device-locale: en_US
+          # ios-version: 18
+          # name: Wikipedia iOS Tests
+          # async: false
+          # env: |
+          #   USERNAME=test_user
+          #   PASSWORD=test_pass
 
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-screenshots
-          path: screenshots/
-          retention-days: 30
+      # The Maestro Cloud action automatically:
+      # - Uploads your app
+      # - Runs tests on real iOS devices in the cloud
+      # - Captures screenshots and videos
+      # - Generates test reports
+      # - Returns results with pass/fail status
 
-      - name: Upload HTML report (if generated)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: |
-            *-test-report.html
-            wikipedia-test-report.html
-          retention-days: 30
-        continue-on-error: true
+      # Results are viewable at: https://console.mobile.dev
 
   # Optional: Android tests job
   # android-tests:
