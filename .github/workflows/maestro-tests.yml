@@ -22,6 +22,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Debug - Check if secrets exist
+        run: |
+          if [ -z "${{ secrets.MAESTRO_CLOUD_API_KEY }}" ]; then
+            echo "❌ MAESTRO_CLOUD_API_KEY is empty or not set"
+          else
+            echo "✅ MAESTRO_CLOUD_API_KEY is set (length: ${#MAESTRO_CLOUD_API_KEY})"
+          fi
+          if [ -z "${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}" ]; then
+            echo "❌ MAESTRO_CLOUD_PROJECT_ID is empty or not set"
+          else
+            echo "✅ MAESTRO_CLOUD_PROJECT_ID is set (length: ${#MAESTRO_CLOUD_PROJECT_ID})"
+          fi
+        env:
+          MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+
       - name: Run Maestro Cloud Tests for iOS
         uses: mobile-dev-inc/action-maestro-cloud@v1
         with:
