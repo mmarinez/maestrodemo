@@ -46,9 +46,9 @@ jobs:
           app-file: Wikipedia.app
           workspace: .maestro
           include-tags: ios
+          device-os: iOS-17-5
           # Optional parameters:
           # device-locale: en_US
-          # ios-version: 18
           # name: Wikipedia iOS Tests
           # async: false
           # env: |
