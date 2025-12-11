@@ -1,0 +1,21 @@
+appId: org.wikimedia.wikipedia
+tags:
+  - ios
+  - search
+  - passing
+---
+- launchApp:
+    clearState: true
+- runFlow: wikipediaOnboardingTests.yml
+- takeScreenshot: "screenshots/06_home_screen_ready.png"
+- tapOn:
+    id: ${output.search.searchButton}
+- takeScreenshot: "screenshots/07_search_field_focused.png"
+- tapOn: ${output.search.searchPlaceholder}
+- takeScreenshot: "screenshots/08_search_opened.png"
+- inputText: ${output.search.searchQuery}
+- takeScreenshot: "screenshots/09_search_text_entered.png"
+- tapOn: ${output.search.articleTitle}
+- takeScreenshot: "screenshots/10_article_loading.png"
+- assertVisible: ${output.search.articleBanner}
+- takeScreenshot: "screenshots/11_article_displayed.png"
